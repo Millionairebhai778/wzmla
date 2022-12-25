@@ -339,7 +339,7 @@ def character(update, context):
         if '~!' in description and '!~' in description: #Spoiler
             btn = ButtonMaker()
             sptext = description.split('~!', 1)[1].rsplit('!~', 1)[0].replace('~!', '').replace('!~', '')
-            btn.sbutton("🔍 View Spoiler", "cha spoil")
+            btn.sbutton("🔍 View Spoiler", f"cha {update.message.from_user.id} spoil")
             rlp_mk = btn.build_menu(1)
             description = description.split('~!', 1)[0]
         if len(description) > 700:  
@@ -348,22 +348,29 @@ def character(update, context):
         image = json.get('image', None)
         if image:
             img = image.get('large')
-            update.effective_message.reply_photo(photo = img, caption = msg, parse_mode=ParseMode.HTML, reply_markup=rlp_mk)
+            update.effective_message.reply_photo(photo = img, caption = msg, reply_markup=rlp_mk)
         else: sendMessage(msg, context.bot, update.message)
 
 def setCharacButtons(update, context):
     query = update.callback_query
     message = query.message
+    user_id = query.from_user.id
     data = query.data
     data = data.split()
-    if data[1] == "spoil":
-        query.answer(text=sptext, show_alert=True)
+    btns = ButtonMaker()
+    btns.sbutton("⌫ Back", f"cha {data[1]} home")
+    if user_id != int(data[1]):
+        query.answer(text="Not Yours!", show_alert=True)
+        return
+    elif data[2] == "spoil":
+        query.answer("Alert !! Shh")
+        message.edit_caption(caption=f"<tg-spoiler>{sptext}</tg-spoiler>", parse_mode=ParseMode.HTML, reply_markup=None) # btns.build_menu(1)
 
 def manga(update, context):
     message = update.effective_message
     search = message.text.split(' ', 1)
     if len(search) == 1:
-        sendMessage('<b>Format :</b> <code>/character</code> <i>[search AniList Character]</i>',  context.bot, update.message) 
+        sendMessage('<b>Format :</b>\n<code>/manga</code> <i>[search manga]</i>',  context.bot, update.message) 
         return
     search = search[1]
     variables = {'search': search}
