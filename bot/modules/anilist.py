@@ -149,7 +149,7 @@ query ($id: Int, $idMal: Int, $search: String) {
 
 character_query = """
 query ($id: Int, $search: String) {
-    Character (search: $query) {
+    Character (id: $id, search: $search) {
         id
         name {
             first
