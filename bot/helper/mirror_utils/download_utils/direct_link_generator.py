@@ -815,7 +815,7 @@ def prun(playwright: Playwright, link:str) -> str:
     firstbtn = page.locator("xpath=//div[text()='Direct Download']/parent::button")
     expect(firstbtn).to_be_visible()
     firstbtn.click()
-    sleep(10)
+    sleep(6)
     
     secondBtn = page.get_by_role("button", name="Download Now")
     expect(secondBtn).to_be_visible()
