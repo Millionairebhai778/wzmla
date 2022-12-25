@@ -731,7 +731,7 @@ def sharer_pw_dl(url: str)-> str:
     data = { '_token': token, 'nl' :1}
     headers={ 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8', 'x-requested-with': 'XMLHttpRequest'}
     response = client.post(url+'/dl', headers=headers, data=data).json()
-    LOGGER.info(response)
+    
     if response.get("status") == 0:
         drive_link = response
         return drive_link.get('url')
