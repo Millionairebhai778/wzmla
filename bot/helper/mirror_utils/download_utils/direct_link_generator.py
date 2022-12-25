@@ -730,17 +730,16 @@ def sharer_pw_dl(url: str)-> str:
     token = re_findall("_token\s=\s'(.*?)'", res.text, DOTALL)[0]
     data = { '_token': token, 'nl' :1}
     headers={ 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8', 'x-requested-with': 'XMLHttpRequest'}
-
-    try:
-        response = client.post(url+'/dl', headers=headers, data=data).json()
+    response = client.post(url+'/dl', headers=headers, data=data).json()
+    if response.get("status") == 0:
         drive_link = response
-        return drive_link['url']
+        return drive_link.get('url')
     
-    except:
-        if drive_link["message"] == "OK":
+    else:
+        if response["message"] == "OK":
             raise DirectDownloadLinkException("Something went wrong. Could not generate GDrive URL for your Sharer Link")
         else:
-            finalMsg = BeautifulSoup(drive_link["message"], "lxml").text
+            finalMsg = BeautifulSoup(response["message"], "lxml").text
             raise DirectDownloadLinkException(finalMsg)
         
 def shareDrive(url,directLogin=True):
