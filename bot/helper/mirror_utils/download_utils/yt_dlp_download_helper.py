@@ -7,7 +7,7 @@ from threading import RLock
 
 from yt_dlp import DownloadError, YoutubeDL
 
-from bot import config_dict, download_dict, download_dict_lock, non_queued_dl, non_queued_up, queued_dl, queue_dict_lock
+from bot import OWNER_ID, config_dict, download_dict, download_dict_lock, non_queued_dl, non_queued_up, queued_dl, queue_dict_lock
 from bot.helper.ext_utils.bot_utils import get_readable_file_size, getdailytasks, is_sudo, is_paid
 from bot.helper.ext_utils.fs_utils import check_storage_threshold
 from bot.helper.mirror_utils.status_utils.convert_status import ConvertStatus
@@ -248,17 +248,17 @@ class YoutubeDLHelper:
                 return self.__onDownloadError(msg)
         limit_exceeded = ''
         if not limit_exceeded and (MAX_PLAYLIST:= config_dict['MAX_PLAYLIST']) \
-                            and (self.is_playlist and self.listener.isLeech):
+                            and (self.is_playlist and self.listener.isLeech) and user_id != OWNER_ID and not is_sudo(user_id) and not is_paid(user_id):
             if self.playlist_count > MAX_PLAYLIST:
                 limit_exceeded = f'Leech Playlist limit is {MAX_PLAYLIST}\n'
                 limit_exceeded += f'Your Playlist is {self.playlist_count}'
-        if not limit_exceeded and (YTDLP_LIMIT:= config_dict['YTDLP_LIMIT']):
+        if not limit_exceeded and (YTDLP_LIMIT:= config_dict['YTDLP_LIMIT']) and user_id != OWNER_ID and not is_sudo(user_id) and not is_paid(user_id):
             limit = YTDLP_LIMIT * 1024**3
             if self.__size > limit:
                 limit_exceeded = f'Ytldp limit is {get_readable_file_size(limit)}\n'
                 limit_exceeded+= f'Your {"Playlist" if self.is_playlist else "Video"} size\n'
                 limit_exceeded+= f'is {get_readable_file_size(self.__size)}'
-        if not limit_exceeded and (LEECH_LIMIT:= config_dict['LEECH_LIMIT']) and self.listener.isLeech:
+        if not limit_exceeded and (LEECH_LIMIT:= config_dict['LEECH_LIMIT']) and self.listener.isLeech and user_id != OWNER_ID and not is_sudo(user_id) and not is_paid(user_id):
             limit = LEECH_LIMIT * 1024**3
             if self.__size > limit:
                 limit_exceeded = f'Leech limit is {get_readable_file_size(limit)}\n'
