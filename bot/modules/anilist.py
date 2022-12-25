@@ -329,14 +329,14 @@ def character(update, context):
     rlp_mk = None
     search = update.message.text.split(' ', 1)
     if len(search) == 1:
-        sendMessage('<b>Format :</b> <code>/character</code> <i>[search AniList Character]</i>', context.bot, update.message) 
+        sendMessage('<b>Format :</b>\n<code>/character</code> <i>[search AniList Character]</i>', context.bot, update.message) 
         return
     json = rpost(url, json={'query': character_query, 'variables': {'query': search[1]}}).json()['data'].get('Character', None)
     if json:
         msg = f"<b>{json.get('name').get('full')}</b> (<code>{json.get('name').get('native')}</code>)\n\n"
         description = json['description']
         site_url = json.get('siteUrl')
-        if any(['~!', '!~']) in description: #Spoiler
+        if '~!' in description and '!~' description: #Spoiler
             btn = ButtonMaker()
             sptext = description.split('~!', 1)[1].rsplit('!~', 1)[0].replace('~!', '').replace('!~', '')
             btn.sbutton("🔍 View Spoiler", "cha spoil")
@@ -363,7 +363,7 @@ def manga(update, context):
     message = update.effective_message
     search = message.text.split(' ', 1)
     if len(search) == 1:
-        update.effective_message.reply_text('Format : /manga < manga_name >') 
+        sendMessage('<b>Format :</b> <code>/character</code> <i>[search AniList Character]</i>',  context.bot, update.message) 
         return
     search = search[1]
     variables = {'search': search}
