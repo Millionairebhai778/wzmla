@@ -341,10 +341,11 @@ def character(update, context, aniid=None):
         msg = f"<b>{json.get('name').get('full')}</b> (<code>{json.get('name').get('native')}</code>)\n\n"
         description = json['description']
         site_url = json.get('siteUrl')
+        siteid = json.get('id')
         if '~!' in description and '!~' in description: #Spoiler
             btn = ButtonMaker()
             sptext = description.split('~!', 1)[1].rsplit('!~', 1)[0].replace('~!', '').replace('!~', '')
-            btn.sbutton("🔍 View Spoiler", f"cha {update.message.from_user.id} spoil")
+            btn.sbutton("🔍 View Spoiler", f"cha {update.message.from_user.id} spoil {siteid}")
             rlp_mk = btn.build_menu(1)
             description = description.split('~!', 1)[0]
         if len(description) > 700:  
@@ -375,7 +376,7 @@ def setCharacButtons(update, context):
         message.edit_caption(caption=f"<b>Spoiler Ahead :</b>\n\n<tg-spoiler>{markdown(sptext).replace('<p>', '').replace('</p>', '')}</tg-spoiler>", parse_mode=ParseMode.HTML, reply_markup=btns.build_menu(1))
     elif data[2] == "home":
         query.answer()
-        msg, btns = character(update, context.bot, siteid)
+        msg, btns = character(update, context.bot, data[3])
         message.edit_caption(caption=msg, parse_mode=ParseMode.HTML, reply_markup=btns)
 
 def manga(update, context):
