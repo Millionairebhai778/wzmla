@@ -325,7 +325,7 @@ def setAnimeButtons(update, context):
         return
     message.edit_caption(caption=msg, parse_mode=ParseMode.HTML, reply_markup=btns.build_menu(1))
 
-def character(update, context, aniid=None):
+def character(update, context, aniid=None, u_id=None):
     global sptext
     rlp_mk = None
     if not aniid:
@@ -334,8 +334,10 @@ def character(update, context, aniid=None):
             sendMessage('<b>Format :</b>\n<code>/character</code> <i>[search AniList Character]</i>', context.bot, update.message) 
             return
         vars = {'search': search[1]}
+        user_id = update.message.from_user.id 
     else:
         vars = {'id': aniid}
+        user_id = int(u_id)
     json = rpost(url, json={'query': character_query, 'variables': vars}).json()['data'].get('Character', None)
     if json:
         msg = f"<b>{json.get('name').get('full')}</b> (<code>{json.get('name').get('native')}</code>)\n\n"
@@ -345,7 +347,7 @@ def character(update, context, aniid=None):
         if '~!' in description and '!~' in description: #Spoiler
             btn = ButtonMaker()
             sptext = description.split('~!', 1)[1].rsplit('!~', 1)[0].replace('~!', '').replace('!~', '')
-            btn.sbutton("🔍 View Spoiler", f"cha {update.message.from_user.id} spoil {siteid}")
+            btn.sbutton("🔍 View Spoiler", f"cha {user_id} spoil {siteid}")
             rlp_mk = btn.build_menu(1)
             description = description.split('~!', 1)[0]
         if len(description) > 700:  
@@ -379,7 +381,7 @@ def setCharacButtons(update, context):
         message.edit_caption(caption=f"<b>Spoiler Ahead :</b>\n\n<tg-spoiler>{markdown(sptext).replace('<p>', '').replace('</p>', '')}</tg-spoiler>", parse_mode=ParseMode.HTML, reply_markup=btns.build_menu(1))
     elif data[2] == "home":
         query.answer()
-        msg, btns = character(update, context.bot, data[3])
+        msg, btns = character(update, context.bot, data[3], data[1])
         message.edit_caption(caption=msg, parse_mode=ParseMode.HTML, reply_markup=btns)
 
 def manga(update, context):
