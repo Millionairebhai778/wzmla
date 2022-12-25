@@ -361,6 +361,7 @@ def character(update, context, aniid=None):
             else: sendMessage(msg, context.bot, update.message)
 
 def setCharacButtons(update, context):
+    global sptext
     query = update.callback_query
     message = query.message
     user_id = query.from_user.id
