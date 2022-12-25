@@ -148,7 +148,7 @@ query ($id: Int, $idMal: Int, $search: String) {
 """
 
 character_query = """
-query ($query: String) {
+query ($id: Int, $search: String) {
     Character (search: $query) {
         id
         name {
@@ -333,7 +333,7 @@ def character(update, context, aniid=None):
         if len(search) == 1:
             sendMessage('<b>Format :</b>\n<code>/character</code> <i>[search AniList Character]</i>', context.bot, update.message) 
             return
-        vars = {'query': search[1]}
+        vars = {'search': search[1]}
     else:
         vars = {'id': aniid}
     json = rpost(url, json={'query': character_query, 'variables': vars}).json()['data'].get('Character', None)
