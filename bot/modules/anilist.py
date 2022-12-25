@@ -325,14 +325,18 @@ def setAnimeButtons(update, context):
         return
     message.edit_caption(caption=msg, parse_mode=ParseMode.HTML, reply_markup=btns.build_menu(1))
 
-def character(update, context):
+def character(update, context, aniid=None):
     global sptext
     rlp_mk = None
-    search = update.message.text.split(' ', 1)
-    if len(search) == 1:
-        sendMessage('<b>Format :</b>\n<code>/character</code> <i>[search AniList Character]</i>', context.bot, update.message) 
-        return
-    json = rpost(url, json={'query': character_query, 'variables': {'query': search[1]}}).json()['data'].get('Character', None)
+    if not aniid:
+        search = update.message.text.split(' ', 1)
+        if len(search) == 1:
+            sendMessage('<b>Format :</b>\n<code>/character</code> <i>[search AniList Character]</i>', context.bot, update.message) 
+            return
+        vars = {'query': search[1]}
+    else:
+        vars = {'id': aniid}
+    json = rpost(url, json={'query': character_query, 'variables': vars}).json()['data'].get('Character', None)
     if json:
         msg = f"<b>{json.get('name').get('full')}</b> (<code>{json.get('name').get('native')}</code>)\n\n"
         description = json['description']
@@ -349,8 +353,11 @@ def character(update, context):
         image = json.get('image', None)
         if image:
             img = image.get('large')
-            update.effective_message.reply_photo(photo = img, caption = msg, reply_markup=rlp_mk)
-        else: sendMessage(msg, context.bot, update.message)
+        if aniid:
+            return msg, rlp_mk
+        else:
+            if img: update.effective_message.reply_photo(photo = img, caption = msg, reply_markup=rlp_mk)
+            else: sendMessage(msg, context.bot, update.message)
 
 def setCharacButtons(update, context):
     query = update.callback_query
@@ -365,7 +372,11 @@ def setCharacButtons(update, context):
         return
     elif data[2] == "spoil":
         query.answer("Alert !! Shh")
-        message.edit_caption(caption=f"<b>Spoiler Ahead :</b>\n\n<tg-spoiler>{sptext}</tg-spoiler>", parse_mode=ParseMode.HTML, reply_markup=None) # btns.build_menu(1)
+        message.edit_caption(caption=f"<b>Spoiler Ahead :</b>\n\n<tg-spoiler>{markdown(sptext)replace('<p>', '').replace('</p>', '')}</tg-spoiler>", parse_mode=ParseMode.HTML, reply_markup=btns.build_menu(1))
+    elif data[2] == "home":
+        query.answer()
+        msg, btns = character(update, context.bot, siteid)
+        message.edit_caption(caption=msg, parse_mode=ParseMode.HTML, reply_markup=btns)
 
 def manga(update, context):
     message = update.effective_message
