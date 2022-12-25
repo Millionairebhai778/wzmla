@@ -372,7 +372,7 @@ def setCharacButtons(update, context):
         return
     elif data[2] == "spoil":
         query.answer("Alert !! Shh")
-        message.edit_caption(caption=f"<b>Spoiler Ahead :</b>\n\n<tg-spoiler>{markdown(sptext)replace('<p>', '').replace('</p>', '')}</tg-spoiler>", parse_mode=ParseMode.HTML, reply_markup=btns.build_menu(1))
+        message.edit_caption(caption=f"<b>Spoiler Ahead :</b>\n\n<tg-spoiler>{markdown(sptext).replace('<p>', '').replace('</p>', '')}</tg-spoiler>", parse_mode=ParseMode.HTML, reply_markup=btns.build_menu(1))
     elif data[2] == "home":
         query.answer()
         msg, btns = character(update, context.bot, siteid)
