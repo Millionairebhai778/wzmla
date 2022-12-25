@@ -175,7 +175,7 @@ query ($id: Int,$search: String) {
             english
             native
         }
-        description (asHtml: true)
+        description (asHtml: false)
         startDate{
             year
         }
