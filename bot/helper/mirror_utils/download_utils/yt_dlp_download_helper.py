@@ -240,7 +240,7 @@ class YoutubeDLHelper:
                 if smsg:
                     self.__onDownloadError('File/Folder already available in Drive.\nHere are the search results:\n', button)
                     return
-         if STORAGE_THRESHOLD:= config_dict['STORAGE_THRESHOLD']:
+        if STORAGE_THRESHOLD:= config_dict['STORAGE_THRESHOLD']:
             acpt = check_storage_threshold(self.__size, self.listener.isZip)
             if not acpt:
                 msg = f'You must leave {STORAGE_THRESHOLD}GB free storage.'
