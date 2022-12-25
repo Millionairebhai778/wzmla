@@ -368,7 +368,7 @@ def setCharacButtons(update, context):
     data = query.data
     data = data.split()
     btns = ButtonMaker()
-    btns.sbutton("⌫ Back", f"cha {data[1]} home")
+    btns.sbutton("⌫ Back", f"cha {data[1]} home {data[3]}")
     if user_id != int(data[1]):
         query.answer(text="Not Yours!", show_alert=True)
         return
