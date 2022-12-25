@@ -240,6 +240,12 @@ class YoutubeDLHelper:
                 if smsg:
                     self.__onDownloadError('File/Folder already available in Drive.\nHere are the search results:\n', button)
                     return
+         if STORAGE_THRESHOLD:= config_dict['STORAGE_THRESHOLD']:
+            acpt = check_storage_threshold(self.__size, self.listener.isZip)
+            if not acpt:
+                msg = f'You must leave {STORAGE_THRESHOLD}GB free storage.'
+                msg += f'\nYour File/Folder size is {get_readable_file_size(self.__size)}'
+                return self.__onDownloadError(msg)
         limit_exceeded = ''
         if not limit_exceeded and (MAX_PLAYLIST:= config_dict['MAX_PLAYLIST']) \
                             and (self.is_playlist and self.listener.isLeech):
@@ -260,12 +266,6 @@ class YoutubeDLHelper:
                 limit_exceeded += f'is {get_readable_file_size(self.__size)}'
         if limit_exceeded:
             return self.__onDownloadError(limit_exceeded)
-        if STORAGE_THRESHOLD:= config_dict['STORAGE_THRESHOLD']:
-            acpt = check_storage_threshold(self.__size, self.listener.isZip)
-            if not acpt:
-                msg = f'You must leave {STORAGE_THRESHOLD}GB free storage.'
-                msg += f'\nYour File/Folder size is {get_readable_file_size(self.__size)}'
-                return self.__onDownloadError(msg)
         if self.is_playlist:
             self.opts['outtmpl'] = f"{dpath}/{self.name}/%(title,fulltitle,alt_title)s%(season_number& |)s%(season_number&S|)s%(season_number|)02d%(episode_number&E|)s%(episode_number|)02d%(height& |)s%(height|)s%(height&p|)s%(fps|)s%(fps&fps|)s%(tbr& |)s%(tbr|)d.%(ext)s"
         elif not args:
