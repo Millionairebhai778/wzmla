@@ -1,4 +1,5 @@
 from requests import post as rpost
+from markdown import markdown
 from random import choice
 from datetime import datetime
 from calendar import month_name
@@ -344,7 +345,7 @@ def character(update, context):
             description = description.split('~!', 1)[0]
         if len(description) > 700:  
             description = f"{description[:700]}...."
-        msg += description
+        msg += markdown(description).replace('<p>', '').replace('</p>', '')
         image = json.get('image', None)
         if image:
             img = image.get('large')
@@ -364,7 +365,7 @@ def setCharacButtons(update, context):
         return
     elif data[2] == "spoil":
         query.answer("Alert !! Shh")
-        message.edit_caption(caption=f"<tg-spoiler>{sptext}</tg-spoiler>", parse_mode=ParseMode.HTML, reply_markup=None) # btns.build_menu(1)
+        message.edit_caption(caption=f"<b>Spoiler Ahead :</b>\n\n<tg-spoiler>{sptext}</tg-spoiler>", parse_mode=ParseMode.HTML, reply_markup=None) # btns.build_menu(1)
 
 def manga(update, context):
     message = update.effective_message
