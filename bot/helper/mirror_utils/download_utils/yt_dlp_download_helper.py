@@ -274,14 +274,14 @@ class YoutubeDLHelper:
             mssg = f"Daily Mirror Limit is {get_readable_file_size(DAILY_MIRROR_LIMIT)}\nYou have exhausted Today's Mirror Limit or Size of your Mirror is greater than free Limits.\n#TRY_AGAIN_TOMORROW #Daily_Mirror_Limit"
             if config_dict['PAID_SERVICE'] is True:
                 mssg += f'\n#Buy Paid Service'
-            self.__onDownloadError(mssg)
+            return self.__onDownloadError(mssg)
         elif not self.listener.isLeech: msize = getdailytasks(user_id, upmirror=size, check_mirror=True); LOGGER.info(f"User : {user_id} | Daily Mirror Size : {get_readable_file_size(msize)}")
 
         if DAILY_LEECH_LIMIT and self.listener.isLeech and user_id != OWNER_ID and not is_sudo(user_id) and not is_paid(user_id) and (self.__size >= (DAILY_LEECH_LIMIT - getdailytasks(user_id, check_leech=True)) or DAILY_LEECH_LIMIT <= getdailytasks(user_id, check_leech=True)):
             mssg = f"Daily Leech Limit is {get_readable_file_size(DAILY_LEECH_LIMIT)}\nYou have exhausted Today's Leech Limit or Size of your Leech is greater than free Limits.\n#TRY_AGAIN_TOMORROW #Daily_Leech_Limit"
             if config_dict['PAID_SERVICE'] is True:
                 mssg += f'\n#Buy Paid Service'
-            self.__onDownloadError(mssg)
+            return self.__onDownloadError(mssg)
         elif self.listener.isLeech: lsize = getdailytasks(user_id, upleech=size, check_leech=True); LOGGER.info(f"User : {user_id} | Daily Leech Size : {get_readable_file_size(lsize)}")
 
         if self.is_playlist:
