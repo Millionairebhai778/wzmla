@@ -336,7 +336,7 @@ def character(update, context):
         msg = f"<b>{json.get('name').get('full')}</b> (<code>{json.get('name').get('native')}</code>)\n\n"
         description = json['description']
         site_url = json.get('siteUrl')
-        if '~!' in description and '!~' description: #Spoiler
+        if '~!' in description and '!~' in description: #Spoiler
             btn = ButtonMaker()
             sptext = description.split('~!', 1)[1].rsplit('!~', 1)[0].replace('~!', '').replace('!~', '')
             btn.sbutton("🔍 View Spoiler", "cha spoil")
