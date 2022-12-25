@@ -8,7 +8,7 @@ from threading import RLock
 from yt_dlp import DownloadError, YoutubeDL
 
 from bot import config_dict, download_dict, download_dict_lock, non_queued_dl, non_queued_up, queued_dl, queue_dict_lock
-from bot.helper.ext_utils.bot_utils import get_readable_file_size
+from bot.helper.ext_utils.bot_utils import get_readable_file_size, getdailytasks, is_sudo, is_paid
 from bot.helper.ext_utils.fs_utils import check_storage_threshold
 from bot.helper.mirror_utils.status_utils.convert_status import ConvertStatus
 from bot.helper.mirror_utils.status_utils.yt_dlp_download_status import YtDlpDownloadStatus
@@ -266,6 +266,24 @@ class YoutubeDLHelper:
                 limit_exceeded += f'is {get_readable_file_size(self.__size)}'
         if limit_exceeded:
             return self.__onDownloadError(limit_exceeded)
+
+        DAILY_MIRROR_LIMIT = config_dict['DAILY_MIRROR_LIMIT'] * 1024**3 if config_dict['DAILY_MIRROR_LIMIT'] else config_dict['DAILY_MIRROR_LIMIT']
+        DAILY_LEECH_LIMIT = config_dict['DAILY_LEECH_LIMIT'] * 1024**3 if config_dict['DAILY_LEECH_LIMIT'] else config_dict['DAILY_LEECH_LIMIT']
+        user_id = self.listener.message.from_user.id
+        if DAILY_MIRROR_LIMIT and not self.listener.isLeech and user_id != OWNER_ID and not is_sudo(user_id) and not is_paid(user_id) and (self.__size >= (DAILY_MIRROR_LIMIT - getdailytasks(user_id, check_mirror=True)) or DAILY_MIRROR_LIMIT <= getdailytasks(user_id, check_mirror=True)):
+            mssg = f"Daily Mirror Limit is {get_readable_file_size(DAILY_MIRROR_LIMIT)}\nYou have exhausted Today's Mirror Limit or Size of your Mirror is greater than free Limits.\n#TRY_AGAIN_TOMORROW #Daily_Mirror_Limit"
+            if config_dict['PAID_SERVICE'] is True:
+                mssg += f'\n#Buy Paid Service'
+            self.__onDownloadError(mssg)
+        elif not self.listener.isLeech: msize = getdailytasks(user_id, upmirror=size, check_mirror=True); LOGGER.info(f"User : {user_id} | Daily Mirror Size : {get_readable_file_size(msize)}")
+
+        if DAILY_LEECH_LIMIT and self.listener.isLeech and user_id != OWNER_ID and not is_sudo(user_id) and not is_paid(user_id) and (self.__size >= (DAILY_LEECH_LIMIT - getdailytasks(user_id, check_leech=True)) or DAILY_LEECH_LIMIT <= getdailytasks(user_id, check_leech=True)):
+            mssg = f"Daily Leech Limit is {get_readable_file_size(DAILY_LEECH_LIMIT)}\nYou have exhausted Today's Leech Limit or Size of your Leech is greater than free Limits.\n#TRY_AGAIN_TOMORROW #Daily_Leech_Limit"
+            if config_dict['PAID_SERVICE'] is True:
+                mssg += f'\n#Buy Paid Service'
+            self.__onDownloadError(mssg)
+        elif self.listener.isLeech: lsize = getdailytasks(user_id, upleech=size, check_leech=True); LOGGER.info(f"User : {user_id} | Daily Leech Size : {get_readable_file_size(lsize)}")
+
         if self.is_playlist:
             self.opts['outtmpl'] = f"{dpath}/{self.name}/%(title,fulltitle,alt_title)s%(season_number& |)s%(season_number&S|)s%(season_number|)02d%(episode_number&E|)s%(episode_number|)02d%(height& |)s%(height|)s%(height&p|)s%(fps|)s%(fps&fps|)s%(tbr& |)s%(tbr|)d.%(ext)s"
         elif not args:
