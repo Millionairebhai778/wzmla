@@ -262,7 +262,7 @@ def set_thumb(update, context, omsg):
     osremove(photo_dir)
     update_user_ldata(user_id, 'thumb', des_dir)
     update.message.delete()
-    update_user_settings(omsg, message.from_user, 'universal')
+    update_user_settings(omsg, message.from_user, 'leech')
     if DATABASE_URL:
         DbManger().update_thumb(user_id, des_dir)
 
