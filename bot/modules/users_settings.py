@@ -401,7 +401,7 @@ def edit_user_settings(update, context):
         handler_dict[user_id] = False
         update_user_ldata(user_id, data[3], False)
         if DATABASE_URL: 
-            DbManger().update_userval(user_id, 'prefix')
+            DbManger().update_userval(user_id, data[3])
         query.answer(text=f"{fname_dict[data[3]]} Removed!", show_alert=True)
         update_user_settings(message, query.from_user, data[4])
     elif data[2] == "cfont":
