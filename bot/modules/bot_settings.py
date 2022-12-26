@@ -5,7 +5,6 @@ from time import time, sleep
 from os import remove, rename, path as ospath, environ, mkdir as osmkdir, listdir as oslistdir
 from subprocess import run as srun, Popen
 from dotenv import load_dotenv
-from shutil import move as smove
 from bot import config_dict, dispatcher, user_data, DATABASE_URL, tgBotMaxFileSize, DRIVES_IDS, DRIVES_NAMES, INDEX_URLS, aria2, GLOBAL_EXTENSION_FILTER, LOGGER, status_reply_dict_lock, Interval, aria2_options, aria2c_global, download_dict, qbit_options, get_client, CATEGORY_NAMES, CATEGORY_IDS, CATEGORY_INDEX
 from bot.helper.telegram_helper.message_utils import sendFile, editMessage, update_all_messages, sendMessage
 from bot.helper.telegram_helper.filters import CustomFilters
@@ -1053,10 +1052,8 @@ def update_private_file(update, context, omsg):
             if not ospath.exists('cookies'):
                 osmkdir('cookies')
             if file_name in oslistdir('cookies'):
-                files = [f for f in oslistdir() if file_name in f.lower()]
-                for file in files:
-                    new_path = 'cookies/' + file
-                    smove(file, new_path)
+                srun(['rm', f'cookies/{file_name}'])
+            srun(['mv', file_name, 'cookies/'])
         elif file_name == 'list_drives.txt':
             DRIVES_IDS.clear()
             DRIVES_NAMES.clear()
