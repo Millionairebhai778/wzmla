@@ -2,9 +2,10 @@ from telegram.ext import CommandHandler, CallbackQueryHandler, MessageHandler, F
 from functools import partial
 from collections import OrderedDict
 from time import time, sleep
-from os import remove, rename, path as ospath, environ
+from os import remove, rename, path as ospath, environ, mkdir as osmkdir, listdir as oslistdir
 from subprocess import run as srun, Popen
 from dotenv import load_dotenv
+from shutil import move as smove
 from bot import config_dict, dispatcher, user_data, DATABASE_URL, tgBotMaxFileSize, DRIVES_IDS, DRIVES_NAMES, INDEX_URLS, aria2, GLOBAL_EXTENSION_FILTER, LOGGER, status_reply_dict_lock, Interval, aria2_options, aria2c_global, download_dict, qbit_options, get_client, CATEGORY_NAMES, CATEGORY_IDS, CATEGORY_INDEX
 from bot.helper.telegram_helper.message_utils import sendFile, editMessage, update_all_messages, sendMessage
 from bot.helper.telegram_helper.filters import CustomFilters
@@ -1034,6 +1035,10 @@ def update_private_file(update, context, omsg):
             srun(["touch", ".netrc"])
             srun(["cp", ".netrc", "/root/.netrc"])
             srun(["chmod", "600", ".netrc"])
+        elif file_name.endswith('.json'):
+            fn = file_name.rsplit('.',1)[0]
+            if ospath.exists('cookies'):
+                srun(["rm", "-rf", "cookies"])
         update.message.delete()
     else:
         doc = update.message.document
@@ -1044,6 +1049,14 @@ def update_private_file(update, context, omsg):
                 srun(["rm", "-rf", "accounts"])
             srun(["unzip", "-q", "-o", "accounts.zip", "-x", "accounts/emails.txt"])
             srun(["chmod", "-R", "777", "accounts"])
+        elif file_name.endswith('.json'):
+            if not ospath.exists('cookies'):
+                osmkdir('cookies')
+            if file_name in oslistdir('cookies'):
+                files = [f for f in oslistdir() if file_name in f.lower()]
+                for file in files:
+                    new_path = 'cookies/' + file
+                    smove(file, new_path)
         elif file_name == 'list_drives.txt':
             DRIVES_IDS.clear()
             DRIVES_NAMES.clear()
